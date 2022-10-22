@@ -22,10 +22,10 @@ namespace UnityPacker
             
             string inpath = args[0];
             string fileName = args.Length > 1 ? args[1] : "Package";
-            bool meaningfulHashes = args.Length > 2 ? args[2].ToLower() == "y" || args[2].ToLower() == "yes" : false;
-            string root = args.Length > 3 ? args[3] : "";
-            string[] exts = args.Length > 4 ? args[4].Split(',') : new string[0];
-            string[] dirs = args.Length > 5 ? args[5].Split(',') : new string[0];
+            bool meaningfulHashes = false; // args.Length > 2 ? args[2].ToLower() == "y" || args[2].ToLower() == "yes" : false;
+            string root = args.Length > 2 ? args[2] : "";
+            string[] exts = args.Length > 3 ? args[3].Split(',') : new string[0];
+            string[] dirs = args.Length > 4 ? args[4].Split(',') : new string[0];
 
             List<string> extensions = new List<string>(exts)
             {
