@@ -53,7 +53,9 @@ namespace UnityPacker
                     }
 
                 string extension = Path.GetExtension(file).Replace(".", "");
-                if (skip || extensions.Contains(extension))
+                bool skipExtension =
+                    !file.EndsWith(".dll.meta") && extensions.Contains(extension);
+                if (skip || skipExtension)
                     continue;
                 
                 string hash1 = RandomHash(), hash2 = RandomHash();
