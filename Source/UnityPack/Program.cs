@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using System.IO;
-using ICSharpCode.SharpZipLib;
 using ICSharpCode.SharpZipLib.GZip;
 using ICSharpCode.SharpZipLib.Tar;
 
@@ -22,15 +20,9 @@ namespace UnityPacker
             
             string inpath = args[0];
             string fileName = args.Length > 1 ? args[1] : "Package";
-            bool meaningfulHashes = false; // args.Length > 2 ? args[2].ToLower() == "y" || args[2].ToLower() == "yes" : false;
+            bool meaningfulHashes = true; // args.Length > 2 ? args[2].ToLower() == "y" || args[2].ToLower() == "yes" : false;
             string root = args.Length > 2 ? args[2] : "";
-            string[] exts = args.Length > 3 ? args[3].Split(',') : new string[0];
             string[] dirs = args.Length > 4 ? args[4].Split(',') : new string[0];
-
-            List<string> extensions = new List<string>(exts)
-            {
-                "meta"
-            };
             
             string[] files = Directory.GetFiles(inpath, "*.*", SearchOption.AllDirectories);
 
@@ -43,8 +35,12 @@ namespace UnityPacker
 				string altName = file;
 				if (file.StartsWith("."))
                 	altName = file.Replace("." + Path.DirectorySeparatorChar, "");
+
+                if (altName.EndsWith(".meta"))
+                    continue;
 				
 				bool skip = false;
+
                 foreach (string dir in dirs)
                     if (altName.StartsWith(dir))
                     {
@@ -52,10 +48,8 @@ namespace UnityPacker
                         break;
                     }
 
-                string extension = Path.GetExtension(file).Replace(".", "");
-                bool skipExtension =
-                    !file.EndsWith(".dll.meta") && extensions.Contains(extension);
-                if (skip || skipExtension)
+
+                if (skip)
                     continue;
                 
                 string hash1 = RandomHash(), hash2 = RandomHash();
@@ -84,6 +78,7 @@ namespace UnityPacker
                 Directory.CreateDirectory(path);
 
                 File.Copy(file, Path.Combine(path, "asset"));
+                File.Copy(file + ".meta", Path.Combine(path, "asset.meta"));
                 using (StreamWriter writer = new StreamWriter(Path.Combine(path, "pathname")))
                     writer.Write(root + altName.Replace(Path.DirectorySeparatorChar + "", "/") + "\n" + hash2);
             }
